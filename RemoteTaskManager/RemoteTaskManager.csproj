@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>RemoteTaskManager</RootNamespace>
+        <Nullable>enable</Nullable>
+        <UseWPF>false</UseWPF>
+        <ApplicationIcon></ApplicationIcon>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Web\Index.html" />
+      <EmbeddedResource Include="Web\Index.html" />
+      <None Remove="Supermacy\ntsd_x64.exe" />
+      <None Remove="Supermacy\ntsd_x86.exe" />
+    </ItemGroup>
+
+</Project>

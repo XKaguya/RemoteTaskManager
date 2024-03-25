@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Remote Task Manager</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    </head>
+
+    <body class="col-md-6 mx-auto">
+        <style>
+            .taskList {
+                list-style-type: none;
+                padding: 0;
+            }
+        
+            .taskItem {
+                background-color: #f0f0f0;
+                padding: 10px;
+                margin: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                border-radius: 5px;
+            }
+        
+            .taskItem.selected {
+                background-color: lightblue;
+            }
+        
+            .taskItem:hover {
+                background-color: #e0e0e0;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            h2 {
+                text-align: center;
+            }
+
+            h3 {
+                text-align: center;
+            }
+
+            h4 {
+                text-align: center;
+            }
+        </style>
+    
+        <h1>Remote Task Manager</h1>
+        <h2>Select a process to decide their fate :)</h2>
+        <h3>Supermacy mode is whether to kill the process by NTSD or Taskkill.</h3>
+        <h4 id="supermacy-id">Supermacy status: False</h4>
+        <button onclick="executeSelectedProcess()" class="btn btn-secondary mb-3">Kill Selected Process</button>
+        <button onclick="sortList('pid')" class="btn btn-success mb-3">Sort by PID</button>
+        <button onclick="sortList('name')" class="btn btn-primary mb-3">Sort by Name</button>
+        <button onclick="sortList('memoryUsage')" class="btn btn-primary mb-3">Sort by Memory Usage</button>
+        <button onclick="sortList('cpuUsage')" class="btn btn-secondary mb-3">Sort by CPU Usage</button>
+        <button id="supermacyModeButton" onclick="toggleSupermacyMode()" class="btn btn-warning mb-3">Supermacy Mode</button>
+        <ul id="taskList" class="taskList"></ul>
+    
+        <script>
+            let selectedItemId = null;
+            let processData = [];
+            let supermacyMode = false;
+            let sortMode = null;
+            
+            function toggleSupermacyMode() {
+                if (supermacyMode)
+                {
+                    supermacyMode = false;
+                    document.getElementById('supermacyModeButton').textContent = 'Turn on Supermacy Mode';
+                    document.getElementById('supermacy-id').textContent = 'Supermacy status: False';
+                }
+                else
+                {
+                    supermacyMode = true;
+                    document.getElementById('supermacyModeButton').textContent = 'Turn off Supermacy Mode';
+                    document.getElementById('supermacy-id').textContent = 'Supermacy status: True';
+                }
+            }
+        
+            function toggleSelection(item) {
+                if (item.classList.contains('selected')) {
+                    item.classList.remove('selected');
+                    selectedItemId = null;
+                } else {
+                    // Remove 'selected' class from all other items
+                    document.querySelectorAll('.taskItem').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    // Add 'selected' class to clicked item
+                    item.classList.add('selected');
+                    selectedItemId = item.id;
+                }
+            }
+        
+            function executeSelectedProcess() {
+                if (selectedItemId) {
+                    const pid = selectedItemId.split('-')[1];
+                    const supermacyMode = false;
+                    const requestData = {
+                        Pid: parseInt(pid),
+                        supermacyMode: supermacyMode
+                    };
+        
+                    fetch(`/Process/KillProcess`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    }).then(response => {
+                        if (response.ok) {
+                            console.log('Process killed successfully.');
+                        } else {
+                            console.error('Failed to kill process.');
+                        }
+                    }).catch(error => {
+                        console.error('Network error:', error);
+                    });
+                } else {
+                    console.log('No process selected.');
+                }
+            }
+        
+            function sortList(key) {
+                let sortedData = processData;
+        
+                switch (key) {
+                    case 'pid':
+                        sortedData.sort((a, b) => a.Pid - b.Pid);
+                        sortMode = 'pid';
+                        break;
+                    case 'name':
+                        sortedData.sort((a, b) => a.Name.localeCompare(b.Name));
+                        sortMode = 'name';
+                        break;
+                    case 'memoryUsage':
+                        sortedData.sort((a, b) => b.MemoryUsage - a.MemoryUsage);
+                        sortMode = 'memoryUsage';
+                        break;
+                    case 'cpuUsage':
+                        sortedData.sort((a, b) => b.CpuUsage - a.CpuUsage);
+                        sortMode = 'cpuUsage';
+                        break;
+                    default:
+                        sortedData.sort((a, b) => a.Pid - b.Pid);
+                }
+        
+                renderList(sortedData);
+            }
+        
+            function renderList(data) {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = '';
+        
+                data.forEach(process => {
+                    const li = document.createElement('li');
+                    li.textContent = `PID: ${process.Pid}, Process Name: ${process.Name}, Used Memory: ${process.MemoryUsage} MB, Is Responding: ${process.IsResponding}, CPU Usage: ${process.CpuUsage}%`;
+                    li.classList.add('taskItem');
+                    li.id = `pid-${process.Pid}`;
+                    
+                    if (selectedItemId && li.id === selectedItemId) {
+                        li.classList.add('selected');
+                    }
+                    
+                    li.addEventListener('click', function() {
+                        toggleSelection(li);
+                    });
+        
+                    taskList.appendChild(li);
+                });
+            }
+        
+            function updateTaskList() {
+                fetch('/Process/GetProcessInfo', {
+                    method: 'GET'
+                }).then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        console.error('Failed to get process info.');
+                    }
+                }).then(processes => {
+                    processData = processes;
+                    sortList(sortMode);
+                }).catch(error => {
+                    console.error('Network error:', error);
+                });
+            }
+        
+            updateTaskList();
+        
+            setInterval(updateTaskList, 2000);
+        </script>
+    </body>
+
+</html>
