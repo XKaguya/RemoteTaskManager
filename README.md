@@ -8,7 +8,7 @@ RemoteTaskManager is a tool used to kill a specific process remotely. It is curr
 
 - Kill processes remotely using `NTSD` or `Taskkill`.
 
-## ToDo
+## TODO
 
 - Customize remote port. (Which already has left a var, but lazy to do.)
 - Language switch (Which I think is not necessary.)
