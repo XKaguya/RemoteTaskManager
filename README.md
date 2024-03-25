@@ -11,8 +11,13 @@ RemoteTaskManager is a tool used to kill a specific process remotely. It is curr
 
 # Usage
 
+* Download from [Release](https://github.com/XKaguya/RemoteTaskManager/releases/) first.
+* The folder should seems like this:
+
+![image](https://github.com/XKaguya/RemoteTaskManager/assets/96401952/c43caf76-3455-4db4-a412-2b92873f7922)
+
 * Double click or open in terminal. And you'll see the url showed by the program.
-* ![image](https://github.com/XKaguya/RemoteTaskManager/assets/96401952/3418a8e4-e97d-4859-98b5-06befb8ce2d4)
+![image](https://github.com/XKaguya/RemoteTaskManager/assets/96401952/3418a8e4-e97d-4859-98b5-06befb8ce2d4)
 * By accessing that url you're able to manage the death of all the processes.
 * Like i can use `192.168.1.195:8181` to access from my mobile phone.
 
