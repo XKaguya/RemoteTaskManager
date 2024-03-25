@@ -9,6 +9,12 @@ RemoteTaskManager is a tool used to kill a specific process remotely. It is curr
 
 - Kill processes remotely using `NTSD` or `Taskkill`.
 
+# Usage
+
+* Double click or open in terminal. And you'll see the url showed by the program.
+* By accessing that url you're able to manage the death of all the processes.
+* Like i can use `192.168.1.195:8181` to access from my mobile phone.
+
 ## TODO
 
 - Customize remote port. (Which already has left a var, but lazy to do.)
