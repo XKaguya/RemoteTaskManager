@@ -29,7 +29,7 @@ RemoteTaskManager is a tool used to kill a specific process remotely. It is curr
 - Open without console window.
 - And etc...
 
-## A Word
+## Not Related
 
 This program is designed to spend my free time, especially in situations where manual intervention is necessary (such as when a process cannot be terminated locally and requires external assistance). It may also be compatible with RDPInterceptor due to a resolved bug in the last release version.
 
